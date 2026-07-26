@@ -1,15 +1,16 @@
 import React from 'react'
 
-import perfumeWaterRed from '../../assets/perfume-water-red.png'
+import coverimage from '../../assets/cover-image.jpeg'
 
 export default function HeroSection() {
   return (
     <div
       style={{
-        backgroundImage: `url(${perfumeWaterRed.src})`,
+        backgroundImage: `url(${coverimage.src})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
+        objectFit: 'cover',
       }}
       className=" w-full h-screen bg-zinc-50 font-sans dark:bg-black  flex items-center"
     >

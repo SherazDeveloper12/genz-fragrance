@@ -4,7 +4,7 @@ import ShoppingCartSignIcon from '@iconify-react/el/shopping-cart-sign';
 import UserSolidIcon from '@iconify-react/mynaui/user-solid';
 export default function Header() {
   return (
-    <div className="flex h-24 w-full items-center justify-between border-b bg-black px-8 dark:border-zinc-700 dark:bg-black sticky top-0 z-50">
+    <header className="flex h-24 w-full items-center justify-between border-b bg-black px-8 dark:border-zinc-700 dark:bg-black sticky top-0 z-50">
         <div>
             <h1 className="text-2xl font-bold flex justify-between items-baseline gap-2 cursor-pointer">
                 {/* gradient color */}
@@ -21,18 +21,25 @@ export default function Header() {
                 <UserSolidIcon height="3em" style={{ color: '#fff' }} />
             </button>
         </div>
-    </div>
+    </header>
   )
 }
 
 function Navigation() {
-    const navItems = ["HOME", "GIFT BOX", "BEST SELLINGS", "TESTER PACK", "ATTAR", "CONTACT"];
+    const navItems = [
+        {"label": "HOME", "href": "/"},
+        {"label": "GIFT BOX", "href": "/gift-box"},
+        {"label": "BEST SELLINGS", "href": "/best-sellings"},
+        {"label": "TESTER PACK", "href": "/tester-pack"},
+        {"label": "ATTAR", "href": "/attar"},
+        {"label": "CONTACT", "href": "/contact"}
+    ];
   return (
     <div className="flex">
-        {navItems.map((item) => (
-            <div key={item} className="flex items-center justify-center p-5 hover:bg-red-500">
-            <a href="#" className="dark:text-gray-700 text-white  text-2xl hover:border-b-2 border-red-500" bg-red-500  key={item}>
-                {item}
+        {navItems.map((item, index) => (
+            <div key={index} className="flex items-center justify-center p-5 hover:bg-red-500">
+            <a href={item.href} className="dark:text-gray-700 text-white  text-2xl"  >
+                {item.label}
             </a>
             </div>
         ))}
