@@ -1,9 +1,9 @@
 import Image from "next/image";
-import HeroSection from "./components/HeroSection/HeroSection";
-import ProductShowCase from "./components/ProductShowCase/ProductShowCase";
-import NewsLetterSubscription from "./components/NewsLetterSubscription/NewsLetterSubscription";
-import ReviewsShowCase from "./components/ReviewsShowCase/ReviewsShowCase";
-import AnimatedSlider from "./components/AnimatedSlider/AnimatedSlider";
+import HeroSection from "../components/HeroSection/HeroSection";
+import AnimatedSlider from "../components/AnimatedSlider/AnimatedSlider";
+import ProductShowCase from "../components/ProductShowCase/ProductShowCase";
+import ReviewsShowCase from "../components/ReviewsShowCase/ReviewsShowCase";
+import NewsLetterSubscription from "../components/NewsLetterSubscription/NewsLetterSubscription";
 
 export default function Home() {
   return (

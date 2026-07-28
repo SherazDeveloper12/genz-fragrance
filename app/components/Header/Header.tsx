@@ -2,7 +2,9 @@
 import React from 'react'
 import ShoppingCartSignIcon from '@iconify-react/el/shopping-cart-sign';
 import UserSolidIcon from '@iconify-react/mynaui/user-solid';
+import { useAppDataProvider } from '@/app/context/Context';
 export default function Header() {
+    const {cartIsOpen, setCartIsOpen} = useAppDataProvider();
   return (
     <header className="flex h-24 w-full items-center justify-between border-b bg-black px-8 dark:border-zinc-700 dark:bg-black sticky top-0 z-50">
         <div>
@@ -14,7 +16,7 @@ export default function Header() {
         </div>
         <div><Navigation /></div>
         <div className="flex gap-4">
-            <button className="flex justify-between items-center gap-2 cursor-pointer">
+            <button className="flex justify-between items-center gap-2 cursor-pointer" onClick={() => setCartIsOpen(!cartIsOpen)}>
                 <ShoppingCartSignIcon height="3em" style={{ color: '#fff' }} />
             </button>
             <button className="flex justify-between items-center gap-2 cursor-pointer">
