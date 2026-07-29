@@ -37,6 +37,7 @@ export default function ProductShowCase() {
             replacingimage: replacingimage1,
             price: '$19.99',
             Rating: 4,
+            Category: 'Gift Box',
         },
         {
             id: 2,
@@ -46,6 +47,7 @@ export default function ProductShowCase() {
             price: '$29.99',
             Rating: 3,
             replacingimage: replacingimage2,
+            Category: 'Gift Box'
         },
         {
             id: 3,
@@ -55,6 +57,7 @@ export default function ProductShowCase() {
             price: '$39.99',
             Rating: 5,
             replacingimage: replacingimage3,
+            Category: 'Best Sellings'
         },
         {
             id: 4,
@@ -64,6 +67,7 @@ export default function ProductShowCase() {
             price: '$49.99',
             replacingimage: replacingimage4,
             Rating: 4,
+            Category: 'Best Sellings'
         },
         {
             id: 5,
@@ -73,6 +77,7 @@ export default function ProductShowCase() {
             price: '$59.99',
             Rating: 5,
             replacingimage: replacingimage5,
+            Category: 'Best Sellings'
         },
         {
             id: 6,
@@ -82,6 +87,7 @@ export default function ProductShowCase() {
             price: '$69.99',
             Rating: 4,
             replacingimage: replacingimage6,
+            Category: 'Tester Packs'
         },
         {
             id: 7,
@@ -91,6 +97,7 @@ export default function ProductShowCase() {
             price: '$79.99',
             Rating: 4,
             replacingimage: replacingimage7,
+            Category: 'Tester Packs'
         },
         {
             id: 8,
@@ -100,6 +107,7 @@ export default function ProductShowCase() {
             price: '$89.99',
             Rating: 5,
             replacingimage: replacingimage8,
+            Category: 'Tester Packs'
         },
         {
             id: 9,
@@ -109,6 +117,7 @@ export default function ProductShowCase() {
             price: '$99.99',
             Rating: 3,
             replacingimage: replacingimage9,
+            Category: 'Attar'
         },
         {
             id: 10,
@@ -118,6 +127,7 @@ export default function ProductShowCase() {
             price: '$109.99',
             Rating: 4,
             replacingimage: replacingimage10,
+            Category: 'Attar'
         },
         {
             id: 11,
@@ -127,6 +137,7 @@ export default function ProductShowCase() {
             price: '$119.99',
             Rating: 5,
             replacingimage: replacingimage11,
+            Category: 'Best Sellings'
         },
     ];
     return (
