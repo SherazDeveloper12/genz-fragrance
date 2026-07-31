@@ -26,14 +26,14 @@ import Image from 'next/image';
 import Stars from '../Stars/Stars'
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSelector } from 'react-redux'
+import { useRouter } from 'next/dist/client/components/navigation'
 
 export default function ProductShowCase({ category }: { category: string }) {
     const products = useSelector((state: any) => state.products.Products);
     const filteredProducts = category ? products.filter((product: any) => product.Category === category) : products;
     const [hoveredProductId, setHoveredProductId] = React.useState<number | null>(null);
     console.log('Filtered Products:', filteredProducts);
-    console.log('Category:', category);
-    console.log('Products:', products);
+    const  router = useRouter();
     return (
         <div className="  w-full bg-neutral-900 h-full p-8 flex flex-col gap-4 ">\
         {category ? 
@@ -46,6 +46,9 @@ export default function ProductShowCase({ category }: { category: string }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
                 {filteredProducts.map((product: any) => (
                     <motion.div
+                    onClick={() => {
+                        router.push(`/${product.id}`);
+                    }}
                         onHoverStart={() => {
                             setHoveredProductId(product.id);
                         }}
