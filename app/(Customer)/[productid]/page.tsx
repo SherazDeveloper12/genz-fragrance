@@ -4,6 +4,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import Image from 'next/image';
 import Stars from '@/app/components/Stars/Stars';
+import ReviewsShowCase from '@/app/components/ReviewsShowCase/ReviewsShowCase';
 
 export default function Page() {
   const products = useSelector((state: any) => state.products.Products);
@@ -26,6 +27,7 @@ export default function Page() {
   }
 
   return (
+    <>
     <div className="min-h-screen bg-neutral-950 px-4 py-8 text-white sm:px-6 lg:px-8 lg:py-12">
       <div className="mx-auto max-w-7xl rounded-[28px] border border-red-500/20 bg-gradient-to-br from-black via-neutral-900 to-red-950/80 p-6 shadow-2xl shadow-red-950/40 sm:p-8 lg:p-10">
         <div className="grid items-center gap-8 lg:grid-cols-[1.05fr_0.95fr]">
@@ -79,5 +81,7 @@ export default function Page() {
         </div>
       </div>
     </div>
+     <ReviewsShowCase/>
+     </>
   );
 }

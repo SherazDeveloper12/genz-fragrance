@@ -3,8 +3,10 @@ import React from 'react'
 import ShoppingCartSignIcon from '@iconify-react/el/shopping-cart-sign';
 import UserSolidIcon from '@iconify-react/mynaui/user-solid';
 import { useAppDataProvider } from '@/app/context/Context';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleCart } from '@/app/store/slices/cart';
 export default function Header() {
-    const {cartIsOpen, setCartIsOpen} = useAppDataProvider();
+    const dispatch = useDispatch();
   return (
     <header className="flex h-24 w-full items-center justify-between border-b bg-black px-8 dark:border-zinc-700 dark:bg-black sticky top-0 z-50">
         <div>
@@ -14,9 +16,9 @@ export default function Header() {
                 <p className='text-white font-extralight  dark:text-gray-300 font-serif'>Fragrance</p>
             </h1>
         </div>
-        <div><Navigation /></div>
+        <div className="hidden lg:flex" ><Navigation /></div>
         <div className="flex gap-4">
-            <button className="flex justify-between items-center gap-2 cursor-pointer" onClick={() => setCartIsOpen(!cartIsOpen)}>
+            <button className="flex justify-between items-center gap-2 cursor-pointer" onClick={() => dispatch(toggleCart())}>
                 <ShoppingCartSignIcon height="3em" style={{ color: '#fff' }} />
             </button>
             <button className="flex justify-between items-center gap-2 cursor-pointer">
