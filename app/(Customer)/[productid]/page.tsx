@@ -1,15 +1,17 @@
 'use client'
 import { useParams } from 'next/navigation';
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Image from 'next/image';
 import Stars from '@/app/components/Stars/Stars';
 import ReviewsShowCase from '@/app/components/ReviewsShowCase/ReviewsShowCase';
+import { addItemToCart, toggleCart } from '@/app/store/slices/cart';
 
 export default function Page() {
   const products = useSelector((state: any) => state.products.Products);
   const params = useParams();
   const productId = Number(params.productid);
+  const dispatch = useDispatch();
 
   const product = Array.isArray(products)
     ? products.find((p: any) => Number(p.id) === productId)
@@ -60,7 +62,16 @@ export default function Page() {
                 <button className="rounded-full bg-red-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-red-500">
                   Buy Now
                 </button>
-                <button className="rounded-full border border-zinc-700 bg-zinc-900 px-6 py-3 text-sm font-semibold text-zinc-200 transition hover:border-red-500 hover:text-red-400">
+                <button 
+                onClick={() => {
+                
+                  dispatch(addItemToCart({
+                    product: product,
+                    quantity: 1
+                  }));
+                    dispatch(toggleCart());
+                }}
+                className="rounded-full border border-zinc-700 bg-zinc-900 px-6 py-3 text-sm font-semibold text-zinc-200 transition hover:border-red-500 hover:text-red-400">
                   Add to Cart
                 </button>
               </div>

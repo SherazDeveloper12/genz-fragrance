@@ -1,19 +1,17 @@
 'use client'
+
+import { Provider,  } from 'react-redux'
 import Cart from '@/app/components/Cart/Cart'
 import Footer from '@/app/components/Footer/Footer'
 import Header from '@/app/components/Header/Header'
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { store } from '@/app/store/store'
 
 export default function ClientShell({children}: {children: React.ReactNode}) {
-    const cartIsOpen = useSelector((state: any) => state.cart.cartIsOpen);
 
     return (
-    <>
-   <Header  />
-    {cartIsOpen && <Cart />}
-      {children}
-        <Footer />
-        </>
+    <Provider store={store}>
+   {children}
+        </Provider>
   )
 }

@@ -50,7 +50,7 @@ export default function ProductShowCase({ category }: { category: string }) {
                         <h3 className="text-lg font-semibold text-gray-200 dark:text-zinc-50 mt-2">{product.name}</h3>
                         <Stars rating={product.Rating} />
                         <p className="text-zinc-400 dark:text-zinc-400">{product.description.substring(0, 100)}...</p>
-                        <p className="text-lg font-bold text-red-600 dark:text-zinc-50">{product.price}</p>
+                        <p className="text-lg font-bold text-red-600 dark:text-zinc-50">PKR {product.price}</p>
                         <div className="flex flex-col ">
                             <button
                             onClick={(e) => {

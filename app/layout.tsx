@@ -2,8 +2,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import ClientShell from "./components/ClientShell/ClientShell";
 
-import { AppProvider,  } from "./context/Context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,21 +25,21 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  
+
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-     
-      
-        <AppProvider>
-        {children}
-        </AppProvider>
-       
+
+        <ClientShell>
+
+          {children}
+        </ClientShell>
+
       </body>
     </html>
   );
-}   
+}
 

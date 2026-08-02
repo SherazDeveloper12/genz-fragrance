@@ -1,137 +1,241 @@
 'use client'
+import { create, nav } from 'motion/react-m';
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+// import { toast, Toaster } from 'sonner';
+// import { useNavigate } from 'react-router';
+import { createOrder } from '../store/slices/order';
+import Image from 'next/image';
+import { useRouter } from 'next/dist/client/components/navigation';
+import { clearCart } from '../store/slices/cart';
+// import { clearCart } from '../store/slices/cart';
+// import { socket } from '../lib/socket';
+export default function Checkout() {
+    const items = useSelector((state) => state.cart.items)
+    const [SameBillingAddress, setSameBillingAddress] = useState(true);
+    // const navigate = useNavigate();
+    const [email, setEmail] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [fullName, setFullName] = useState('');
+    const [addressLine1, setAddressLine1] = useState('');
+    const [city, setCity] = useState('');
+    const [stateProvince, setStateProvince] = useState('');
+    const [postalZipCode, setPostalZipCode] = useState('');
+    const [country, setCountry] = useState('');
+    const [billingFullName, setBillingFullName] = useState('');
+    const [billingAddressLine1, setBillingAddressLine1] = useState('');
+    const [billingCity, setBillingCity] = useState('');
+    const [billingStateProvince, setBillingStateProvince] = useState('');
+    const [billingPostalZipCode, setBillingPostalZipCode] = useState('');
+    const [billingCountry, setBillingCountry] = useState('');
+    const [paymentMethod, setPaymentMethod] = useState('COD');
+    const [popupVisible, setPopupVisible] = useState(false);
+    // const {user, tempID} = useSelector((state) => state.auth);
+    const dispatch = useDispatch();
+    const router = useRouter();
+      //  const { status, error } = useSelector((state) => state.order);
 
-import { useParams } from 'next/navigation';
-import React from 'react';
+    const handlePlaceOrder = (e) => {
+        e.preventDefault();
+        // const orderDetails = {
+        //     username: user ? user.username : `Guest`,
+        //     userid: user ? user._id : tempID,
+        //     email,
+        //     phoneNumber,
+        //     shippingAddress: {
+        //         fullName,
+        //         addressLine1,
+        //         city,
+        //         stateProvince,
+        //         postalZipCode,
+        //         country,
+        //     },
+        //     billingAddress: SameBillingAddress ? {
+        //         fullName,
+        //         addressLine1,
+        //         city,
+        //         stateProvince,
+        //         postalZipCode,
+        //         country,
+        //     } : {
+        //         fullName: billingFullName,
+        //         addressLine1: billingAddressLine1,
+        //         city: billingCity,
+        //         stateProvince: billingStateProvince,
+        //         postalZipCode: billingPostalZipCode,
+        //         country: billingCountry,
+        //     },
+        //     paymentMethod,
+        //     items,
+           
+        // };
+        // dispatch(createOrder(orderDetails));
+   
+        
+        setEmail('');
+        setPhoneNumber('');
+        setFullName('');
+        setAddressLine1('');
+        setCity('');
+        setStateProvince('');
+        setPostalZipCode('');
+        setCountry('');
+        setBillingFullName('');
+        setBillingAddressLine1('');
+        setBillingCity('');
+        setBillingStateProvince('');
+        setBillingPostalZipCode('');
+        setBillingCountry('');
+        setPaymentMethod('COD');
+        dispatch(clearCart());
+    };
+    // useEffect(() => {
+    //         if (status === 'succeeded') {
+    //             toast.dismiss();
+    //             toast.success('Order placed successfully!');
+    //             dispatch(clearCart());
+    //             navigate('/' , {replace:true} );
+    //         }
+    //         else if (status === 'loading') {
+    //             toast.loading('Placing order...');
+    //         }
+    //         else if (status === 'failed') {
+    //             toast.dismiss();
+    //             toast.error(`${error}`);
+    //         }
+    //     }, [status, error]);
 
-export default function Page() {
-  const params = useParams();
-  const productId = params.id; 
-  {productId ? console.log('Product ID:', productId) : console.log('No Product ID found in the URL')}
-  return (
-    <div className="min-h-screen bg-neutral-950 px-4 py-8 text-white sm:px-6 lg:px-8 lg:py-12">
-      <div className="mx-auto max-w-7xl rounded-[32px] border border-red-500/20 bg-gradient-to-br from-black via-neutral-900 to-red-950/80 p-6 shadow-2xl shadow-red-950/40 sm:p-8 lg:p-10">
-        <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-sm uppercase tracking-[0.35em] text-red-400">Secure Checkout</p>
-            <h1 className="mt-2 text-3xl font-semibold sm:text-4xl">Complete Your Order</h1>
-          </div>
-          <div className="rounded-full border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm text-red-200">
-            Free shipping over $50
-          </div>
+
+    return (
+        <div className='flex flex-col text-white '>
+            <div 
+            onClick={() => router.push('/')}>
+            <h1 className="text-2xl font-bold flex justify-start items-baseline gap-2 cursor-pointer bg-neutral-950 py-2 border-b px-8">
+                {/* gradient color */}
+                <p className=" text-red-500 font-serif">GenZ</p>
+                <p className='text-white font-extralight  dark:text-gray-300 font-serif'>Fragrance</p>
+            </h1>
         </div>
-
-        <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
-          <div className="space-y-6">
-            <section className="rounded-2xl border border-zinc-800 bg-black/60 p-6">
-              <h2 className="text-xl font-semibold text-white">Contact Information</h2>
-              <div className="mt-4 grid gap-4 md:grid-cols-2">
-                <input
-                  className="rounded-xl border border-zinc-700 bg-zinc-900/80 px-4 py-3 text-sm outline-none transition focus:border-red-500"
-                  placeholder="Full Name"
-                />
-                <input
-                  className="rounded-xl border border-zinc-700 bg-zinc-900/80 px-4 py-3 text-sm outline-none transition focus:border-red-500"
-                  placeholder="Email Address"
-                />
-                <input
-                  className="rounded-xl border border-zinc-700 bg-zinc-900/80 px-4 py-3 text-sm outline-none transition focus:border-red-500 md:col-span-2"
-                  placeholder="Phone Number"
-                />
-              </div>
-            </section>
-
-            <section className="rounded-2xl border border-zinc-800 bg-black/60 p-6">
-              <h2 className="text-xl font-semibold text-white">Shipping Address</h2>
-              <div className="mt-4 grid gap-4 md:grid-cols-2">
-                <input
-                  className="rounded-xl border border-zinc-700 bg-zinc-900/80 px-4 py-3 text-sm outline-none transition focus:border-red-500 md:col-span-2"
-                  placeholder="Street Address"
-                />
-                <input
-                  className="rounded-xl border border-zinc-700 bg-zinc-900/80 px-4 py-3 text-sm outline-none transition focus:border-red-500"
-                  placeholder="City"
-                />
-                <input
-                  className="rounded-xl border border-zinc-700 bg-zinc-900/80 px-4 py-3 text-sm outline-none transition focus:border-red-500"
-                  placeholder="ZIP Code"
-                />
-                <input
-                  className="rounded-xl border border-zinc-700 bg-zinc-900/80 px-4 py-3 text-sm outline-none transition focus:border-red-500"
-                  placeholder="Country"
-                />
-              </div>
-            </section>
-
-            <section className="rounded-2xl border border-zinc-800 bg-black/60 p-6">
-              <h2 className="text-xl font-semibold text-white">Payment Method</h2>
-              <div className="mt-4 space-y-3">
-                <input
-                  className="rounded-xl border border-zinc-700 bg-zinc-900/80 px-4 py-3 text-sm outline-none transition focus:border-red-500"
-                  placeholder="Cardholder Name"
-                />
-                <input
-                  className="rounded-xl border border-zinc-700 bg-zinc-900/80 px-4 py-3 text-sm outline-none transition focus:border-red-500"
-                  placeholder="Card Number"
-                />
-                <div className="grid gap-4 md:grid-cols-2">
-                  <input
-                    className="rounded-xl border border-zinc-700 bg-zinc-900/80 px-4 py-3 text-sm outline-none transition focus:border-red-500"
-                    placeholder="MM/YY"
-                  />
-                  <input
-                    className="rounded-xl border border-zinc-700 bg-zinc-900/80 px-4 py-3 text-sm outline-none transition focus:border-red-500"
-                    placeholder="CVV"
-                  />
+          
+          
+            <div className=' flex md:flex-row flex-col-reverse'>
+            {/* <Toaster position="top-right" richColors /> */}
+                <div className='flex-1 bg-neutral-950 flex flex-col gap-3 p-8'>
+                    <h2 className='text-2xl font-bold mb-4'>Shipping Information</h2>
+                     <form 
+                     onSubmit={handlePlaceOrder}>
+                    <div>
+                        <h2 className='text-xl font-semibold mb-2'>Contact</h2>
+                        <input type='email' required placeholder='Email' value={email} onChange={(e)=>setEmail(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
+                        <input type='text' required placeholder='Phone Number' value={phoneNumber} onChange={(e)=>setPhoneNumber(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
+                    </div>
+                    <div>
+                        <h2 className='text-xl font-semibold mb-2'>Shipping Address</h2>
+                        <input type='text' required placeholder='Full Name' value={fullName} onChange={(e)=>setFullName(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
+                        <input type='text' required placeholder='Address Line 1' value={addressLine1} onChange={(e)=>setAddressLine1(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
+                        <div className='flex gap-3 mb-3'>
+                            <input type='text' required placeholder='City' value={city} onChange={(e)=>setCity(e.target.value)} className='border border-neutral-500 rounded p-2 w-full bg-black ' />
+                            <input type='text' required placeholder='State/Province' value={stateProvince} onChange={(e)=>setStateProvince(e.target.value)} className='border border-neutral-500 rounded p-2 w-full bg-black ' />
+                        </div>
+                        <input type='text' required placeholder='Postal/Zip Code' value={postalZipCode} onChange={(e)=>setPostalZipCode(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
+                        <input type='text' required placeholder='Country' value={country} onChange={(e)=>setCountry(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
+                    </div>
+                    <div>
+                        <h2 className='text-xl font-semibold mb-2'>Billing Address</h2>
+                        <input type="checkbox" id='SameAsShippingAddress' defaultChecked={SameBillingAddress} onChange={() => setSameBillingAddress(!SameBillingAddress)} />
+                        <label htmlFor='SameAsShippingAddress' className='ml-2'>Same as shipping address</label>
+                        {!SameBillingAddress && (
+                            <div className='mt-3'>
+                                <input type='text' required placeholder='Full Name' value={billingFullName} onChange={(e)=>setBillingFullName(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
+                                <input type='text' required placeholder='Address Line 1' value={billingAddressLine1} onChange={(e)=>setBillingAddressLine1(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
+                                <div className='flex gap-3 mb-3'>
+                                    <input type='text' required placeholder='City' value={billingCity} onChange={(e)=>setBillingCity(e.target.value)} className='border border-neutral-500 rounded p-2 w-full bg-black ' />
+                                    <input type='text' required placeholder='State/Province' value={billingStateProvince} onChange={(e)=>setBillingStateProvince(e.target.value)} className='border border-neutral-500 rounded p-2 w-full bg-black ' />
+                                </div>
+                                <input type='text' required placeholder='Postal/Zip Code' value={billingPostalZipCode} onChange={(e)=>setBillingPostalZipCode(e.target.value)} className='border border-neutral-500 rounded
+                                    p-2 w-full mb-3 bg-black ' />
+                                <input type='text' required placeholder='Country' value={billingCountry} onChange={(e)=>setBillingCountry(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
+                            </div>
+                        )}
+                    </div>
+                    <div>
+                        <h2 className='text-xl font-semibold mb-2'>Payment Method</h2>
+                        <div className='flex justify-start items-center gap-6'>
+                            <div>
+                                <input type="radio" id='COD' name='paymentMethod' defaultChecked onChange={() => setPaymentMethod('COD')} className='mr-2' />
+                                <label htmlFor='COD'>Cash on Delivery</label>
+                            </div>
+                            <div>
+                                <input type="radio" id='PayNow' name='paymentMethod' onChange={() => setPaymentMethod('PayNow')} className='mr-2' />
+                                <label htmlFor='PayNow'>Pay Now Online</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <button 
+                        type="submit"
+                        className='bg-red-500 text-white px-4 py-2 rounded w-full cursor-pointer hover:bg-red-700 mt-4'>Place Order</button>
+                    </div>
+                    </form>
                 </div>
-              </div>
-            </section>
-          </div>
+                <div className='flex-1 p-8 bg-zinc-900 border-l border-neutral-500'>
+                    {items.length === 0 ? (
+                        <div className='text-center text-gray-500'>Your cart is empty.</div>
+                    ) : (
+                        <div className='flex flex-col gap-3 pb-3 '>
+                            <h2 className='text-2xl font-bold mb-4'>Checkout</h2>
+                            <ul className='flex flex-col gap-4'>
+                                {items.map((item) => (
+                                    <li key={item.product.id} className='flex gap-3 bg-neutral-950 p-3 rounded items-center'>
+                                        <div className='flex-1'>
+                                            <Image
+                                                src={item.product.image}
+                                                alt={item.product.name}
+                                                className='w-20 h-20 object-cover border border-neutral-500 rounded'
+                                            />
+                                        </div>
+                                        <div className='flex-3'>
+                                            <div className='font-semibold'>{item.product.name}</div>
+                                            <div>Quantity: {item.quantity}</div>
 
-          <aside className="rounded-2xl border border-red-500/20 bg-black/70 p-6 shadow-inner shadow-red-950/30">
-            <h2 className="text-xl font-semibold text-white">Order Summary</h2>
+                                        </div>
+                                        <div className='flex-2'>  {item.product.price} PKR</div>
+                                    </li>
+                                ))}
+                            </ul>
+                            <div>
+                                <div className=''>
+                                    <div className='flex justify-between items-center'>
+                                        <p>Total Items:</p>
+                                        <p> {items.reduce((total, item) => total + item.quantity, 0)}</p>
+                                    </div>
+                                    <div className='flex justify-between items-center'>
+                                        <p>Total Items Cost: </p>
+                                        <p>{items.reduce((total, item) => total + item.product.price * item.quantity, 0)} PKR</p>
+                                    </div>
+                                    <div className='flex justify-between items-center'>
+                                        <p>Delievery Charges: </p>
+                                        <p> 499 PKR</p>
+                                    </div>
+                                    <div className='flex justify-between items-center font-semibold text-lg'>
+                                        <p>Total Payable Ammount: </p>
+                                        <p>{items.reduce((total, item) => total + item.product.price * item.quantity, 0) + 499} PKR</p>
+                                    </div>
+                                    <div className='flex justify-between items-center'>
+                                        <p>Payment Status: </p>
+                                        <p>Unpaid</p>
+                                    </div>
+                                </div>
 
-            <div className="mt-5 space-y-4">
-              <div className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/70 px-4 py-3">
-                <div>
-                  <p className="font-medium text-white">Obsession for Men</p>
-                  <p className="text-sm text-zinc-400">1 x 100ml</p>
+                            </div>
+                            {/* <div className='flex items-center gap-4'>
+                                <input type='text' placeholder='Apply Coupon' className='border border-neutral-500 rounded p-2 flex-3 bg-neutral-950 ' />
+                                <button className='bg-green-500 text-white px-4 py-2 rounded flex-1 cursor-pointer hover:bg-green-700'>Apply</button>
+                            </div> */}
+                        </div>
+                    )}
                 </div>
-                <p className="font-semibold text-red-400">$19.99</p>
-              </div>
-
-              <div className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/70 px-4 py-3">
-                <div>
-                  <p className="font-medium text-white">Shipping</p>
-                  <p className="text-sm text-zinc-400">Express delivery</p>
-                </div>
-                <p className="font-semibold text-red-400">Free</p>
-              </div>
             </div>
-
-            <div className="mt-6 space-y-3 border-t border-zinc-800 pt-4">
-              <div className="flex items-center justify-between text-sm text-zinc-300">
-                <span>Subtotal</span>
-                <span>$19.99</span>
-              </div>
-              <div className="flex items-center justify-between text-sm text-zinc-300">
-                <span>Tax</span>
-                <span>$2.00</span>
-              </div>
-              <div className="flex items-center justify-between text-lg font-semibold text-white">
-                <span>Total</span>
-                <span className="text-red-400">$21.99</span>
-              </div>
-            </div>
-
-            <button className="mt-6 w-full rounded-full bg-red-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-500">
-              Place Order
-            </button>
-            <p className="mt-3 text-center text-xs text-zinc-500">
-              Your payment is secured and encrypted.
-            </p>
-          </aside>
         </div>
-      </div>
-    </div>
-  );
+    )
 }
