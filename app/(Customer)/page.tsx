@@ -13,16 +13,16 @@ export default function Home() {
      <AnimatedSlider />
      <ProductShowCase />
      <ReviewsShowCase />
-     <div className="flex  items-center justify-around w-full py-4 px-8 text-white text-2xl font-bold  bg-red-500 dark:bg-black">
+     <div className="flex  items-center justify-around w-full py-1 lg:py-4 px-2 lg:px-8 text-white text-md lg:text-2xl font-bold  bg-red-500 dark:bg-black">
        <div>
-        <p>1 YEAR WARRANTY</p>
+        <p className="text-white text-xs lg:text-2xl font-bold">1 YEAR WARRANTY</p>
        </div>
-       <div className="flex items-center justify-center gap-2">
-        <Truck size={36} />
-        <p>FREE SHIPPING</p>
+       <div className="flex items-center justify-center gap-1 lg:gap-2">
+        <Truck size={24} />
+        <p className="text-white text-xs lg:text-2xl font-bold">FREE SHIPPING</p>
        </div>
        <div>
-        <p>30-DAY MONEY-BACK GUARANTEE</p>
+        <p className="text-white text-xs lg:text-2xl font-bold">30-DAY MONEY-BACK GUARANTEE</p>
        </div>
      </div>
      <NewsLetterSubscription />
