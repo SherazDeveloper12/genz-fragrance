@@ -12,8 +12,7 @@ export default function ProductShowCase({ category }: { category: string }) {
     const products = useSelector((state: any) => state.products.Products);
     const filteredProducts = category ? products.filter((product: any) => product.Category === category) : products;
     const [hoveredProductId, setHoveredProductId] = React.useState<number | null>(null);
-    console.log('Filtered Products:', filteredProducts);
-    const  router = useRouter();
+x    const  router = useRouter();
     const dispatch = useDispatch();
     return (
         <div className="  w-full bg-neutral-900 h-full p-8 flex flex-col gap-4 ">\

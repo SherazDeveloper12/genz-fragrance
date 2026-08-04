@@ -6,7 +6,7 @@ import React from 'react'
 export default function testerpack() {
   const params = usePathname();
     const category = params.split('/').filter(Boolean)[0];
-    console.log('Category:', category);
+    
     return (
       <div>
      <ProductShowCase category={category} />

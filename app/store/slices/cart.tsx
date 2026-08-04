@@ -11,7 +11,7 @@ export const CartSlice = createSlice({
     },
     reducers: {
         toggleCart: (state) => {
-            console.log("toggle cart called");
+            
             state.cartIsOpen = !state.cartIsOpen;
         },
         fetchCartFromStorage: (state) => {

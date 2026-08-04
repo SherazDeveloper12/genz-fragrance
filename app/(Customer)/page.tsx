@@ -11,7 +11,7 @@ export default function Home() {
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
      <HeroSection />
      <AnimatedSlider />
-     <ProductShowCase />
+     <ProductShowCase category=""/>
      <ReviewsShowCase />
      <div className="flex  items-center justify-around w-full py-1 lg:py-4 px-2 lg:px-8 text-white text-md lg:text-2xl font-bold  bg-red-500 dark:bg-black">
        <div>
