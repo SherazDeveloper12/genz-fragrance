@@ -7,12 +7,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useRouter } from 'next/dist/client/components/navigation'
 import { addItemToCart, toggleCart } from '@/app/store/slices/cart';
 
-export default function ProductShowCase({ category }: { category: string }) {
+export default function ProductShowCase({ category }: { category?: string }) {
 
     const products = useSelector((state: any) => state.products.Products);
     const filteredProducts = category ? products.filter((product: any) => product.Category === category) : products;
     const [hoveredProductId, setHoveredProductId] = React.useState<number | null>(null);
-x    const  router = useRouter();
+    const  router = useRouter();
     const dispatch = useDispatch();
     return (
         <div className="  w-full bg-neutral-900 h-full p-8 flex flex-col gap-4 ">\
