@@ -8,10 +8,22 @@ import { createOrder } from '../store/slices/order';
 import Image from 'next/image';
 import { useRouter } from 'next/dist/client/components/navigation';
 import { clearCart } from '../store/slices/cart';
+import type { RootState } from '../store/store';
 // import { clearCart } from '../store/slices/cart';
 // import { socket } from '../lib/socket';
+
+type CartItem = {
+    product: {
+        id: number;
+        name: string;
+        image: any;
+        price: number;
+    };
+    quantity: number;
+};
+
 export default function Checkout() {
-    const items = useSelector((state) => state.cart.items)
+    const items = useSelector((state: RootState) => state.cart.items) as CartItem[];
     const [SameBillingAddress, setSameBillingAddress] = useState(true);
     // const navigate = useNavigate();
     const [email, setEmail] = useState('');
@@ -35,7 +47,7 @@ export default function Checkout() {
     const router = useRouter();
       //  const { status, error } = useSelector((state) => state.order);
 
-    const handlePlaceOrder = (e) => {
+    const handlePlaceOrder = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         // const orderDetails = {
         //     username: user ? user.username : `Guest`,
