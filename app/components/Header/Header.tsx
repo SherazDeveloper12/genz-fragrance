@@ -6,6 +6,7 @@ import { useAppDataProvider } from '@/app/context/Context';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleCart } from '@/app/store/slices/cart';
 import { useRouter } from 'next/dist/client/components/navigation';
+import { Package, ShoppingCart } from 'lucide-react';
 export default function Header() {
     const router = useRouter();
     const dispatch = useDispatch();
@@ -21,11 +22,11 @@ export default function Header() {
         </div>
         <div className="hidden lg:flex" ><Navigation /></div>
         <div className="flex gap-2 lg:gap-4">
-            <button className="flex justify-between items-center gap-1 lg:gap-2 cursor-pointer" h-12 onClick={() => dispatch(toggleCart())}>
-                <ShoppingCartSignIcon height='2em' style={{ color: '#fff' }} />
+            <button className="flex justify-between items-center gap-1 lg:gap-2 cursor-pointer bg-white  rounded-full  p-1 px-2"  onClick={() => dispatch(toggleCart())}>
+                <ShoppingCart height='2em' style={{ color: '#000' }} />
             </button>
-            <button className="flex justify-between items-center gap-2 cursor-pointer">
-                <UserSolidIcon height="2em" style={{ color: '#fff' }} />
+            <button className="flex justify-between items-center gap-2 cursor-pointer bg-white  rounded-full  p-1 px-2" onClick={() => router.push('/order')}>
+                <Package height='2em' style={{ color: '#000' }}  />
             </button>
         </div>
     </header>

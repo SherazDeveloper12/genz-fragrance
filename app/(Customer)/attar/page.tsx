@@ -4,11 +4,10 @@ import {  usePathname,  } from 'next/dist/client/components/navigation';
 import React from 'react'
 
 export default function Attar() {
-  const params = usePathname();
-  const category = params.split('/').filter(Boolean)[0];
+  const category = 'Attar'
   
   return (
-    <div>
+    <div className='min-h-screen bg-neutral-900'>
    <ProductShowCase category={category} />
 
     </div>

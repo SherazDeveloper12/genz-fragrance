@@ -5,10 +5,10 @@ import React from 'react'
 
 export default function bestSellings() {
   const params = usePathname();
-    const category = params.split('/').filter(Boolean)[0];
-   
+    const category = 'Best Sellings'
+
     return (
-      <div>
+     <div className='min-h-screen bg-neutral-900'>
      <ProductShowCase category={category} />
   
       </div>

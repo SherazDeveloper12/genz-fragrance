@@ -28,7 +28,7 @@ export const CartSlice = createSlice({
             if (storedItems) {
                 state.items = JSON.parse(storedItems);
                 console.log('Stored Items:', state.items);
-                const existingItem = state.items.find(item => item.product.id === newItem.product.id);
+                const existingItem = state.items.find(item => item.product._id === newItem.product._id);
                 if (!existingItem) {
                     state.items.unshift(newItem);
                 }
@@ -43,7 +43,7 @@ export const CartSlice = createSlice({
         },
         removeItemFromCart: (state, action) => {
             const id = action.payload;
-            const filteredItems = state.items.filter(item => item.product.id !== id);
+            const filteredItems = state.items.filter(item => item.product._id !== id);
             state.items = filteredItems;
             localStorage.setItem('cartItems', JSON.stringify(state.items));
         },

@@ -53,12 +53,12 @@ export default function Cart() {
               </div>
               {items.length > 0 ? <div className='flex-1 flex flex-col gap-1 lg:gap-2 px-1 lg:px-2 pt-3 lg:pt-6 pb-4 lg:pb-8 bg-black overflow-auto'>
                 {items.map((item: any) => (
-                  <div key={item.product.id} className='flex justify-between items-center bg-neutral-800 rounded-xl shadow-md gap-1 lg:gap-2  border-collapse p-1 lg:p-2 hover:translate-y-1 duration-300 ease-in'>
+                  <div key={item.product._id} className='flex justify-between items-center bg-neutral-800 rounded-xl shadow-md gap-1 lg:gap-2  border-collapse p-1 lg:p-2 hover:translate-y-1 duration-300 ease-in'>
                     <div className='p-1 lg:p-2 border border-neutral-500'>
-                      <Image src={item.product.image} alt={item.product.name} className='w-12 lg:w-16 h-12 lg:h-16 object-cover' />
+                      <img src={item.product.img[0]} alt={item.product.heading} className='w-12 lg:w-16 h-12 lg:h-16 object-fit' />
                     </div>
                     <div className='flex-1 flex flex-col justify-center'>
-                      <h3 className='lg:font-semibold'>{item.product.name}</h3>
+                      <h3 className='lg:font-semibold'>{item.product.heading}</h3>
                       <div className='flex  items-center gap-1'> <p>{item.quantity}</p> <p>X</p>
                         <p className=''>{item.product.price} =</p>
                         <p className='font-semibold text-amber-600'>{item.quantity * item.product.price} PKR</p>
@@ -66,7 +66,7 @@ export default function Cart() {
                       </div>
                     </div>
                     <div
-                      onClick={() => dispatch(removeItemFromCart(item.product.id))}
+                      onClick={() => dispatch(removeItemFromCart(item.product._id))}
                       className='flex justify-center items-center size-8 lg:size-10'>
                       <Trash2 size={20} className=' cursor-pointer ' />
                     </div>

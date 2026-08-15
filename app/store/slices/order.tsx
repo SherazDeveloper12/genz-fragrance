@@ -1,9 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from 'axios';
-const BASE_URL = import.meta.env.VITE_BASE_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5000';
 export const createOrder = createAsyncThunk(
     "order/createOrder",
     async (orderData) => {
+        console.log("Creating order with data:", orderData);
         try {
             const response = await axios.post(`${BASE_URL}/orders/create`, orderData, {
                 headers: {
@@ -11,7 +12,7 @@ export const createOrder = createAsyncThunk(
                 },
             });
             const data = await response.data;
-
+            console.log("Order created successfully:", data);
             return data;
         } catch (error) {
             console.error("Error creating order:", error);

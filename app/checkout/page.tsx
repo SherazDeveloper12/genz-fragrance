@@ -4,11 +4,13 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 // import { toast, Toaster } from 'sonner';
 // import { useNavigate } from 'react-router';
-import { createOrder } from '../store/slices/order';
-import Image from 'next/image';
-import { useRouter } from 'next/dist/client/components/navigation';
-import { clearCart } from '../store/slices/cart';
+import { createOrder, fetchOrdersbyuserid } from '../store/slices/order';
+
+import { useRouter } from 'next/navigation';
+import { clearCart, fetchCartFromStorage } from '../store/slices/cart';
+import { setUser } from '../store/slices/auth';
 import type { RootState } from '../store/store';
+import { fetchProducts } from '../store/slices/product';
 // import { clearCart } from '../store/slices/cart';
 // import { socket } from '../lib/socket';
 
@@ -23,6 +25,14 @@ type CartItem = {
 };
 
 export default function Checkout() {
+    useEffect(() => {
+        dispatch(setUser());
+         dispatch(fetchProducts());
+          dispatch(fetchCartFromStorage());
+          return () => {
+            // Cleanup if needed
+          }
+    }, []);
     const items = useSelector((state: RootState) => state.cart.items) as CartItem[];
     const [SameBillingAddress, setSameBillingAddress] = useState(true);
     // const navigate = useNavigate();
@@ -42,46 +52,49 @@ export default function Checkout() {
     const [billingCountry, setBillingCountry] = useState('');
     const [paymentMethod, setPaymentMethod] = useState('COD');
     const [popupVisible, setPopupVisible] = useState(false);
-    // const {user, tempID} = useSelector((state) => state.auth);
+    const _id = useSelector((state) => state.auth.user_id);
+    console.log('User from Redux:', _id);
     const dispatch = useDispatch();
     const router = useRouter();
-      //  const { status, error } = useSelector((state) => state.order);
+       const { status, error } = useSelector((state) => state.orders);
 
     const handlePlaceOrder = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // const orderDetails = {
-        //     username: user ? user.username : `Guest`,
-        //     userid: user ? user._id : tempID,
-        //     email,
-        //     phoneNumber,
-        //     shippingAddress: {
-        //         fullName,
-        //         addressLine1,
-        //         city,
-        //         stateProvince,
-        //         postalZipCode,
-        //         country,
-        //     },
-        //     billingAddress: SameBillingAddress ? {
-        //         fullName,
-        //         addressLine1,
-        //         city,
-        //         stateProvince,
-        //         postalZipCode,
-        //         country,
-        //     } : {
-        //         fullName: billingFullName,
-        //         addressLine1: billingAddressLine1,
-        //         city: billingCity,
-        //         stateProvince: billingStateProvince,
-        //         postalZipCode: billingPostalZipCode,
-        //         country: billingCountry,
-        //     },
-        //     paymentMethod,
-        //     items,
+        console.log('Placing order with the following details:');
+        const orderDetails = {
+            username: `Guest`,
+            userid:  _id ,
+            email,
+            phoneNumber,
+            shippingAddress: {
+                fullName,
+                addressLine1,
+                city,
+                stateProvince,
+                postalZipCode,
+                country,
+            },
+            billingAddress: SameBillingAddress ? {
+                fullName,
+                addressLine1,
+                city,
+                stateProvince,
+                postalZipCode,
+                country,
+            } : {
+                fullName: billingFullName,
+                addressLine1: billingAddressLine1,
+                city: billingCity,
+                stateProvince: billingStateProvince,
+                postalZipCode: billingPostalZipCode,
+                country: billingCountry,
+            },
+            paymentMethod,
+            items,
+            storeID: '6a7a2a19f8e85aac2049511c',
            
-        // };
-        // dispatch(createOrder(orderDetails));
+        };
+        dispatch(createOrder(orderDetails));
    
         
         setEmail('');
@@ -99,23 +112,24 @@ export default function Checkout() {
         setBillingPostalZipCode('');
         setBillingCountry('');
         setPaymentMethod('COD');
-        dispatch(clearCart());
+        
     };
-    // useEffect(() => {
-    //         if (status === 'succeeded') {
-    //             toast.dismiss();
-    //             toast.success('Order placed successfully!');
-    //             dispatch(clearCart());
-    //             navigate('/' , {replace:true} );
-    //         }
-    //         else if (status === 'loading') {
-    //             toast.loading('Placing order...');
-    //         }
-    //         else if (status === 'failed') {
-    //             toast.dismiss();
-    //             toast.error(`${error}`);
-    //         }
-    //     }, [status, error]);
+    useEffect(() => {
+            if (status === 'succeeded') {
+                // toast.dismiss();
+                // toast.success('Order placed successfully!');
+                dispatch(clearCart());
+                dispatch(fetchOrdersbyuserid(_id));
+                router.push('/order' , {replace:true} );
+            }
+            else if (status === 'loading') {
+                // toast.loading('Placing order...');
+            }
+            else if (status === 'failed') {
+                // toast.dismiss();
+                // toast.error(`${error}`);
+            }
+        }, [status, error]);
 
 
     return (
@@ -177,10 +191,10 @@ export default function Checkout() {
                                 <input type="radio" id='COD' name='paymentMethod' defaultChecked onChange={() => setPaymentMethod('COD')} className='mr-2' />
                                 <label htmlFor='COD'>Cash on Delivery</label>
                             </div>
-                            <div>
+                            {/* <div>
                                 <input type="radio" id='PayNow' name='paymentMethod' onChange={() => setPaymentMethod('PayNow')} className='mr-2' />
                                 <label htmlFor='PayNow'>Pay Now Online</label>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                     <div>
@@ -198,16 +212,16 @@ export default function Checkout() {
                             <h2 className='text-2xl font-bold mb-4'>Checkout</h2>
                             <ul className='flex flex-col gap-4'>
                                 {items.map((item) => (
-                                    <li key={item.product.id} className='flex gap-3 bg-neutral-950 p-3 rounded items-center'>
+                                    <li key={item.product._id} className='flex gap-3 bg-neutral-950 p-3 rounded items-center'>
                                         <div className='flex-1'>
-                                            <Image
-                                                src={item.product.image}
-                                                alt={item.product.name}
-                                                className='w-20 h-20 object-cover border border-neutral-500 rounded'
+                                            <img
+                                                src={item.product.img[0]}
+                                                alt={item.product.heading}
+                                                className='w-20 h-20 object-fit border border-neutral-500 rounded'
                                             />
                                         </div>
                                         <div className='flex-3'>
-                                            <div className='font-semibold'>{item.product.name}</div>
+                                            <div className='font-semibold'>{item.product.heading}</div>
                                             <div>Quantity: {item.quantity}</div>
 
                                         </div>

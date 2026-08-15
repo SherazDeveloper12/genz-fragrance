@@ -1,0 +1,110 @@
+'use client'
+import { fetchOrdersbyuserid } from '@/app/store/slices/order';
+import { RootState } from '@/app/store/store';
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+
+export default function order() {
+  const dispatch = useDispatch();
+  const _id = useSelector((state: RootState) => state.auth.user_id);
+  const {orders, status, error} = useSelector((state: RootState) => state.orders);
+  const reversedOrders = orders.toReversed();
+  useEffect(() => {
+    dispatch(fetchOrdersbyuserid(_id));
+  }, [_id])
+  console.log("fetching orders for user id", _id);
+  console.log("orders", orders);
+  return (
+     <div className='min-h-screen flex flex-col gap-4 bg-neutral-800 p-4 md:p-8'>
+      {orders.length === 0 ? (
+        <div className='flex flex-col justify-center items-center h-[70vh] gap-4'>
+          <p className='text-2xl text-neutral-400'>No orders found yet. Continue shopping to place your first order.</p>
+          <button className='ml-4 py-2 px-4 bg-blue-500 cursor-pointer font-semibold text-white rounded' onClick={() => window.location.href = '/'}>Shop Now</button>
+        </div>
+      ) : ( status === 'loading' ? <div>Loading orders...</div> :
+
+
+        <div className='flex flex-col gap-4 bg-neutral-800'>
+          {reversedOrders.map((order) => (
+            <div key={order._id} className="text-white bg-black shadow-md rounded border border-neutral-400 p-2 md:p-4 mb-4 flex flex-col gap-2 md:gap-4">
+
+              <div className='flex flex-row justify-between items-center font-semibold '>
+                <p className='text-sm md:text-md text-neutral-400'>#{order._id}</p>
+                <span className='text-sm md:py-1 px-4 border border-green-400 bg-green-300 rounded-2xl'>Status:     {order.status}</span>
+              </div>
+              <div className='flex flex-col md:flex-row justify-between'>
+                <div className='flex flex-col justify-between font-semibold '>
+                  <p className='text-sm md:text-md'>Order By</p>
+
+                  <p className='text-sm md:text-md text-neutral-400'>{order.shippingAddress.fullName}</p>
+                  <p className='text-sm md:text-md text-neutral-400'>{order.shippingAddress.addressLine1}</p>
+                  <p className='text-sm md:text-md text-neutral-400'>{order.shippingAddress.city}</p>
+                </div>
+                <div className='flex flex-col justify-start font-semibold '>
+                  <p className='text-sm md:text-md'>Order Placed At:</p>
+                 
+                   <p className='text-sm md:text-md text-neutral-400'>{new Date(order.createdAt).toLocaleDateString()}</p>
+                  <p className='text-sm md:text-md'>Expected Delivery:</p>
+                  <p className='text-sm md:text-md text-neutral-400'>{order.expectedDelivery ? new Date(order.expectedDelivery).toLocaleDateString() : 'In 2 to 3 days'}</p>
+                </div>
+              </div>
+
+
+
+              <div className=' border border-gray-300 rounded'>
+                <div className='flex justify-between items-center border-b border-gray-200 p-2'>
+                  <div className="flex items-center gap-4">
+                    <h3 className="font-bold mb-2 w-16 text-center">Image</h3>
+                    <h3 className="font-bold mb-2">Product Details</h3>
+
+                  </div>
+                  <h3 className="font-bold mb-2">Price</h3>
+
+
+                </div>
+                <div className='p-2'>
+                  {order.items.map((item) => (
+                    <div key={item.product._id} className="flex justify-between items-center ">
+                      <div className="flex items-center gap-4">
+                        <img src={item.product.img[0]} alt={item.product.title} className="w-16 h-16 object-cover rounded" />
+                        <div>
+                          <p className="font-medium">{item.product.title}</p>
+                          <p className="text-sm text-neutral-400">Quantity: {item.quantity}</p>
+                        </div>
+                      </div>
+                      <p className="font-semibold">${item.product.price * item.quantity}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className='flex flex-col gap-2 '>
+                <div className=' flex justify-between text-neutral-400 mt-2'>
+                  <p>Payment Method: </p>
+                  <p>{order.paymentMethod}</p>
+                </div>
+               
+                <div className=' flex justify-between text-neutral-400 mt-2'>
+                  <p>Total Items Cost: </p>
+                  <p>{order.items.reduce((total, item) => total + item.product.price * item.quantity, 0)}</p>
+                </div>
+               
+                <div className=' flex justify-between text-neutral-400 mt-2'>
+                  <p>Delivery Charges: </p>
+                  <p>${order.deliveryCharges}</p>
+                </div>
+                <div className='font-semibold flex justify-between border-t border-gray-300 mt-2'>
+                  <p>Total Amount: </p>
+                  <p>${order.payableAmount}</p>
+                </div>
+              </div>
+
+            </div>
+          ))}
+
+        </div>
+      )}
+      {}
+      {status === 'failed' && <div>Error: {error}</div>}
+    </div>
+  )
+}
