@@ -132,9 +132,9 @@ export const orderSlice = createSlice({
             })
             .addCase(createOrder.fulfilled, (state, action) => {
                 state.status = "succeeded";
-               const existingOrder = state.orders.find(order => order._id === action.payload._id);
+               const existingOrder = state.orders.find(order => order._id === action.payload.order._id);
             if (!existingOrder) {
-                state.orders.push(action.payload);
+                state.orders.push(action.payload.order);
                 localStorage.setItem("orders", JSON.stringify(state.orders));
             }
             })
@@ -144,7 +144,8 @@ export const orderSlice = createSlice({
             });
         builder
             .addCase(FetchAllOrders.pending, (state) => {
-               
+                state.status = "loading";
+
             })
             .addCase(FetchAllOrders.fulfilled, (state, action) => {
               localStorage.setItem("allorders", JSON.stringify(action.payload));
