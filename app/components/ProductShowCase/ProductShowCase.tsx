@@ -2,11 +2,10 @@
 import React from 'react'
 import Image from 'next/image';
 import Stars from '../Stars/Stars'
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux'
 import { useRouter } from 'next/dist/client/components/navigation'
 import { addItemToCart, toggleCart } from '@/app/store/slices/cart';
-
 export default function ProductShowCase({ category }: { category?: string }) {
 
     const products = useSelector((state: any) => state.products.Products);
@@ -15,8 +14,17 @@ export default function ProductShowCase({ category }: { category?: string }) {
     const [hoveredProductId, setHoveredProductId] = React.useState<number | null>(null);
     const router = useRouter();
     const dispatch = useDispatch();
+    const ref = React.useRef<HTMLDivElement>(null);
+    const ScrollYProgress = useScroll({ target: ref, offset: ["start end", "end start"] });
+    const opacity = useTransform(ScrollYProgress.scrollYProgress, [0.5, 1], [1, 0.5]);
+    const scale = useTransform(ScrollYProgress.scrollYProgress, [0, 1], [0.8, 1]);
     return (
-        <div className="  w-full bg-neutral-900 h-full p-8 flex flex-col gap-4 ">\
+        <motion.div
+        
+         ref={ref}
+         
+         style={{ opacity, scale , }}
+         className="  w-full bg-neutral-900 h-full p-8 flex flex-col gap-4 ">\
             {category ?
                 <h1 className="text-3xl  text-white dark:text-zinc-50 text-center ">Our {category.charAt(0).toUpperCase() + category.slice(1)}</h1>
 
@@ -84,6 +92,6 @@ export default function ProductShowCase({ category }: { category?: string }) {
                 ))}
 
             </div>
-        </div>
+        </motion.div>
     )
 }

@@ -1,11 +1,21 @@
+'use client'
 import React from 'react'
 
 import coverimage from '../../assets/cover-image.jpeg'
-
+import { motion, useScroll, useTransform } from 'framer-motion'
 export default function HeroSection() {
+  const ref = React.useRef<HTMLDivElement>(null);
+    const ScrollYProgress = useScroll({ target: ref, offset: [ "end start"] });
+    const opacity = useTransform(ScrollYProgress.scrollYProgress, [1, 0], [0, 0]);
+    const scale = useTransform(ScrollYProgress.scrollYProgress, [0, 1], [0.8, 1]);
   return (
-    <section className="relative w-full overflow-hidden">
-      <img
+    <motion.section
+    ref={ref}
+    style={{   }}
+    className="relative w-full overflow-hidden">
+      <motion.img
+      animate={{ translateX: [0, 100, 0] }}
+      transition={{ duration: 8, repeat: Infinity }}
         src={coverimage.src}
         alt="GenZ Fragrance cover"
         className="h-[62vh] min-h-90 w-full object-cover md:h-[86vh] lg:h-screen"
@@ -34,6 +44,6 @@ export default function HeroSection() {
           </button>
         </div>
       </div>
-    </section>
+    </motion.section>
   )
 }
