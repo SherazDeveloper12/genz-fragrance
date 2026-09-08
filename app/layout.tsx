@@ -4,6 +4,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ClientShell from "./components/ClientShell/ClientShell";
 import favicon from '../favicon.ico'
+import Provider from "./provider";
+import StoreProvider from "./provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,8 +24,8 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://genz-fragrance.vercel.app/"),
   openGraph: {
     title: "Genz Fragrance",
-  description: "Discover the perfect scent for every moment with us. Love and fragrance cannot be hidden.",
-  images: [favicon.src],
+    description: "Discover the perfect scent for every moment with us. Love and fragrance cannot be hidden.",
+    images: [favicon.src],
   },
   twitter: {
     card: "summary_large_image",
@@ -38,19 +40,18 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
+  console.log('RootLayout rendered');
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-
-        <ClientShell>
-
-          {children}
-        </ClientShell>
-
+        <StoreProvider>
+          <ClientShell>
+            {children}
+          </ClientShell>
+        </StoreProvider>
       </body>
     </html>
   );

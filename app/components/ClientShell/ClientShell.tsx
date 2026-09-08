@@ -1,17 +1,23 @@
 'use client'
 
-import { Provider,  } from 'react-redux'
-import Cart from '@/app/components/Cart/Cart'
-import Footer from '@/app/components/Footer/Footer'
-import Header from '@/app/components/Header/Header'
-import React from 'react'
-import { store } from '@/app/store/store'
+import React, { useEffect } from 'react'
+import { Provider, useDispatch, useSelector,  } from 'react-redux'
+
+
+import { fetchStorePaymentMethods, fetchStorePaymentMethodsLocally, setUser } from '@/app/store/slices/auth';
+import { fetchProducts } from '@/app/store/slices/product';
 
 export default function ClientShell({children}: {children: React.ReactNode}) {
-
+   const dispatch = useDispatch();
+    useEffect(() => {
+      dispatch(setUser());
+      dispatch(fetchProducts());
+      dispatch(fetchStorePaymentMethodsLocally());
+      dispatch(fetchStorePaymentMethods());
+    }, []);
     return (
-    <Provider store={store}>
+    <>
    {children}
-        </Provider>
+        </>
   )
 }

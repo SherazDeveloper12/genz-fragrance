@@ -11,8 +11,8 @@ import { clearCart, fetchCartFromStorage } from '../store/slices/cart';
 import { setUser } from '../store/slices/auth';
 import type { RootState } from '../store/store';
 import { fetchProducts } from '../store/slices/product';
-// import { clearCart } from '../store/slices/cart';
-// import { socket } from '../lib/socket';
+import ImageUploader from '../components/ImageUploader/ImageUploader';
+
 
 type CartItem = {
     product: {
@@ -27,12 +27,14 @@ type CartItem = {
 export default function Checkout() {
     useEffect(() => {
         dispatch(setUser());
-         dispatch(fetchProducts());
-          dispatch(fetchCartFromStorage());
-          return () => {
+        dispatch(fetchProducts());
+        dispatch(fetchCartFromStorage());
+        return () => {
             // Cleanup if needed
-          }
+        }
     }, []);
+    const paymentMethods = useSelector((state: RootState) => state.auth.paymentMethods);
+    console.log('Payment Methods from Redux:', paymentMethods);
     const items = useSelector((state: RootState) => state.cart.items) as CartItem[];
     const [SameBillingAddress, setSameBillingAddress] = useState(true);
     // const navigate = useNavigate();
@@ -50,158 +52,183 @@ export default function Checkout() {
     const [billingStateProvince, setBillingStateProvince] = useState('');
     const [billingPostalZipCode, setBillingPostalZipCode] = useState('');
     const [billingCountry, setBillingCountry] = useState('');
-    const [paymentMethod, setPaymentMethod] = useState('COD');
+    const [paymentMethod, setPaymentMethod] = useState('');
+    const [paymentReceipt, setPaymentReceipt] = useState('');
     const [popupVisible, setPopupVisible] = useState(false);
     const _id = useSelector((state) => state.auth.user_id);
     console.log('User from Redux:', _id);
     const dispatch = useDispatch();
     const router = useRouter();
-       const { status, error } = useSelector((state) => state.orders);
-
+    const { status, error } = useSelector((state) => state.orders);
+    const [requiredFieldsFilled, setRequiredFieldsFilled] = useState(false);
     const handlePlaceOrder = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log('Placing order with the following details:');
-        const orderDetails = {
-            username: `Guest`,
-            userid:  _id ,
-            email,
-            phoneNumber,
-            shippingAddress: {
-                fullName,
-                addressLine1,
-                city,
-                stateProvince,
-                postalZipCode,
-                country,
-            },
-            billingAddress: SameBillingAddress ? {
-                fullName,
-                addressLine1,
-                city,
-                stateProvince,
-                postalZipCode,
-                country,
-            } : {
-                fullName: billingFullName,
-                addressLine1: billingAddressLine1,
-                city: billingCity,
-                stateProvince: billingStateProvince,
-                postalZipCode: billingPostalZipCode,
-                country: billingCountry,
-            },
-            paymentMethod,
-            items,
-            storeID: '6a7a2a19f8e85aac2049511c',
-           
-        };
-        dispatch(createOrder(orderDetails));
-   
-        
-        setEmail('');
-        setPhoneNumber('');
-        setFullName('');
-        setAddressLine1('');
-        setCity('');
-        setStateProvince('');
-        setPostalZipCode('');
-        setCountry('');
-        setBillingFullName('');
-        setBillingAddressLine1('');
-        setBillingCity('');
-        setBillingStateProvince('');
-        setBillingPostalZipCode('');
-        setBillingCountry('');
-        setPaymentMethod('COD');
-        
+        if (paymentReceipt === "") {
+            console.log('Please select a payment method.');
+            setRequiredFieldsFilled(true);
+            alert('Please Upload the payment receipt.');
+            return;
+        }
+        else {
+            setRequiredFieldsFilled(false);
+            console.log('Placing order with the following details:');
+            const orderDetails = {
+                username: `Guest`,
+                userid: _id,
+                email,
+                phoneNumber,
+                shippingAddress: {
+                    fullName,
+                    addressLine1,
+                    city,
+                    stateProvince,
+                    postalZipCode,
+                    country,
+                },
+                billingAddress: SameBillingAddress ? {
+                    fullName,
+                    addressLine1,
+                    city,
+                    stateProvince,
+                    postalZipCode,
+                    country,
+                } : {
+                    fullName: billingFullName,
+                    addressLine1: billingAddressLine1,
+                    city: billingCity,
+                    stateProvince: billingStateProvince,
+                    postalZipCode: billingPostalZipCode,
+                    country: billingCountry,
+                },
+                paymentMethod,
+                items,
+                storeID: '6a7a2a19f8e85aac2049511c',
+
+            };
+            dispatch(createOrder(orderDetails));
+
+
+            setEmail('');
+            setPhoneNumber('');
+            setFullName('');
+            setAddressLine1('');
+            setCity('');
+            setStateProvince('');
+            setPostalZipCode('');
+            setCountry('');
+            setBillingFullName('');
+            setBillingAddressLine1('');
+            setBillingCity('');
+            setBillingStateProvince('');
+            setBillingPostalZipCode('');
+            setBillingCountry('');
+            setPaymentMethod('COD');
+        }
     };
     useEffect(() => {
-            if (status === 'succeeded') {
-                // toast.dismiss();
-                // toast.success('Order placed successfully!');
-                dispatch(clearCart());
-                dispatch(fetchOrdersbyuserid(_id));
-                router.push('/order' , {replace:true} );
-            }
-            else if (status === 'loading') {
-                // toast.loading('Placing order...');
-            }
-            else if (status === 'failed') {
-                // toast.dismiss();
-                // toast.error(`${error}`);
-            }
-        }, [status, error]);
+        if (status === 'succeeded') {
+            // toast.dismiss();
+            // toast.success('Order placed successfully!');
+            dispatch(clearCart());
+            dispatch(fetchOrdersbyuserid(_id));
+            router.push('/order', { replace: true });
+        }
+        else if (status === 'loading') {
+            // toast.loading('Placing order...');
+        }
+        else if (status === 'failed') {
+            // toast.dismiss();
+            // toast.error(`${error}`);
+        }
+    }, [status, error]);
 
 
     return (
         <div className='flex flex-col text-white '>
-            <div 
-            onClick={() => router.push('/')}>
-            <h1 className="text-2xl font-bold flex justify-start items-baseline gap-2 cursor-pointer bg-neutral-950 py-2 border-b px-8">
-                {/* gradient color */}
-                <p className=" text-red-500 font-serif">GenZ</p>
-                <p className='text-white font-extralight  dark:text-gray-300 font-serif'>Fragrance</p>
-            </h1>
-        </div>
-          
-          
+            <div
+                onClick={() => router.push('/')}>
+                <h1 className="text-2xl font-bold flex justify-start items-baseline gap-2 cursor-pointer bg-neutral-950 py-2 border-b px-8">
+                    {/* gradient color */}
+                    <p className=" text-red-500 font-serif">GenZ</p>
+                    <p className='text-white font-extralight  dark:text-gray-300 font-serif'>Fragrance</p>
+                </h1>
+            </div>
+
+
             <div className=' flex md:flex-row flex-col-reverse'>
-            {/* <Toaster position="top-right" richColors /> */}
+                {/* <Toaster position="top-right" richColors /> */}
                 <div className='flex-1 bg-neutral-950 flex flex-col gap-3 p-8'>
                     <h2 className='text-2xl font-bold mb-4'>Shipping Information</h2>
-                     <form 
-                     onSubmit={handlePlaceOrder}>
-                    <div>
-                        <h2 className='text-xl font-semibold mb-2'>Contact</h2>
-                        <input type='email' required placeholder='Email' value={email} onChange={(e)=>setEmail(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
-                        <input type='text' required placeholder='Phone Number' value={phoneNumber} onChange={(e)=>setPhoneNumber(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
-                    </div>
-                    <div>
-                        <h2 className='text-xl font-semibold mb-2'>Shipping Address</h2>
-                        <input type='text' required placeholder='Full Name' value={fullName} onChange={(e)=>setFullName(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
-                        <input type='text' required placeholder='Address Line 1' value={addressLine1} onChange={(e)=>setAddressLine1(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
-                        <div className='flex gap-3 mb-3'>
-                            <input type='text' required placeholder='City' value={city} onChange={(e)=>setCity(e.target.value)} className='border border-neutral-500 rounded p-2 w-full bg-black ' />
-                            <input type='text' required placeholder='State/Province' value={stateProvince} onChange={(e)=>setStateProvince(e.target.value)} className='border border-neutral-500 rounded p-2 w-full bg-black ' />
+                    <form
+                        onSubmit={handlePlaceOrder}>
+                        <div>
+                            <h2 className='text-xl font-semibold mb-2'>Contact</h2>
+                            <input type='email' required placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
+                            <input type='text' required placeholder='Phone Number' value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
                         </div>
-                        <input type='text' required placeholder='Postal/Zip Code' value={postalZipCode} onChange={(e)=>setPostalZipCode(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
-                        <input type='text' required placeholder='Country' value={country} onChange={(e)=>setCountry(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
-                    </div>
-                    <div>
-                        <h2 className='text-xl font-semibold mb-2'>Billing Address</h2>
-                        <input type="checkbox" id='SameAsShippingAddress' defaultChecked={SameBillingAddress} onChange={() => setSameBillingAddress(!SameBillingAddress)} />
-                        <label htmlFor='SameAsShippingAddress' className='ml-2'>Same as shipping address</label>
-                        {!SameBillingAddress && (
-                            <div className='mt-3'>
-                                <input type='text' required placeholder='Full Name' value={billingFullName} onChange={(e)=>setBillingFullName(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
-                                <input type='text' required placeholder='Address Line 1' value={billingAddressLine1} onChange={(e)=>setBillingAddressLine1(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
-                                <div className='flex gap-3 mb-3'>
-                                    <input type='text' required placeholder='City' value={billingCity} onChange={(e)=>setBillingCity(e.target.value)} className='border border-neutral-500 rounded p-2 w-full bg-black ' />
-                                    <input type='text' required placeholder='State/Province' value={billingStateProvince} onChange={(e)=>setBillingStateProvince(e.target.value)} className='border border-neutral-500 rounded p-2 w-full bg-black ' />
-                                </div>
-                                <input type='text' required placeholder='Postal/Zip Code' value={billingPostalZipCode} onChange={(e)=>setBillingPostalZipCode(e.target.value)} className='border border-neutral-500 rounded
+                        <div>
+                            <h2 className='text-xl font-semibold mb-2'>Shipping Address</h2>
+                            <input type='text' required placeholder='Full Name' value={fullName} onChange={(e) => setFullName(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
+                            <input type='text' required placeholder='Address Line 1' value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
+                            <div className='flex gap-3 mb-3'>
+                                <input type='text' required placeholder='City' value={city} onChange={(e) => setCity(e.target.value)} className='border border-neutral-500 rounded p-2 w-full bg-black ' />
+                                <input type='text' required placeholder='State/Province' value={stateProvince} onChange={(e) => setStateProvince(e.target.value)} className='border border-neutral-500 rounded p-2 w-full bg-black ' />
+                            </div>
+                            <input type='text' required placeholder='Postal/Zip Code' value={postalZipCode} onChange={(e) => setPostalZipCode(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
+                            <input type='text' required placeholder='Country' value={country} onChange={(e) => setCountry(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
+                        </div>
+                        <div>
+                            <h2 className='text-xl font-semibold mb-2'>Billing Address</h2>
+                            <input type="checkbox" id='SameAsShippingAddress' defaultChecked={SameBillingAddress} onChange={() => setSameBillingAddress(!SameBillingAddress)} />
+                            <label htmlFor='SameAsShippingAddress' className='ml-2'>Same as shipping address</label>
+                            {!SameBillingAddress && (
+                                <div className='mt-3'>
+                                    <input type='text' required placeholder='Full Name' value={billingFullName} onChange={(e) => setBillingFullName(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
+                                    <input type='text' required placeholder='Address Line 1' value={billingAddressLine1} onChange={(e) => setBillingAddressLine1(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
+                                    <div className='flex gap-3 mb-3'>
+                                        <input type='text' required placeholder='City' value={billingCity} onChange={(e) => setBillingCity(e.target.value)} className='border border-neutral-500 rounded p-2 w-full bg-black ' />
+                                        <input type='text' required placeholder='State/Province' value={billingStateProvince} onChange={(e) => setBillingStateProvince(e.target.value)} className='border border-neutral-500 rounded p-2 w-full bg-black ' />
+                                    </div>
+                                    <input type='text' required placeholder='Postal/Zip Code' value={billingPostalZipCode} onChange={(e) => setBillingPostalZipCode(e.target.value)} className='border border-neutral-500 rounded
                                     p-2 w-full mb-3 bg-black ' />
-                                <input type='text' required placeholder='Country' value={billingCountry} onChange={(e)=>setBillingCountry(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
-                            </div>
-                        )}
-                    </div>
-                    <div>
-                        <h2 className='text-xl font-semibold mb-2'>Payment Method</h2>
-                        <div className='flex justify-start items-center gap-6'>
-                            <div>
-                                <input type="radio" id='COD' name='paymentMethod' defaultChecked onChange={() => setPaymentMethod('COD')} className='mr-2' />
-                                <label htmlFor='COD'>Cash on Delivery</label>
-                            </div>
-                            {/* <div>
-                                <input type="radio" id='PayNow' name='paymentMethod' onChange={() => setPaymentMethod('PayNow')} className='mr-2' />
-                                <label htmlFor='PayNow'>Pay Now Online</label>
-                            </div> */}
+                                    <input type='text' required placeholder='Country' value={billingCountry} onChange={(e) => setBillingCountry(e.target.value)} className='border border-neutral-500 rounded p-2 w-full mb-3 bg-black ' />
+                                </div>
+                            )}
                         </div>
-                    </div>
-                    <div>
-                        <button 
-                        type="submit"
-                        className='bg-red-500 text-white px-4 py-2 rounded w-full cursor-pointer hover:bg-red-700 mt-4'>Place Order</button>
-                    </div>
+                        <div>
+                            <h2 className='text-xl font-semibold mb-2'>Payment Method</h2>
+                            <div className='flex flex-col justify-center items-start gap-2 w-full'>
+                                {paymentMethods.map((method, idx) => (
+                                    <div key={idx} className="w-full" >
+                                        <input required type="radio" id={idx} name='paymentMethod' onChange={() => setPaymentMethod(idx)} className='mr-2' />
+                                        <label htmlFor={idx}>{method.type}</label>
+                                        {paymentMethod === idx && paymentMethods[paymentMethod].type !== 'cod' &&
+                                            <div className='bg-neutral-950 p-3 rounded mt-2 border border-neutral-500 w-full'>
+                                                <p className='text-sm text-gray-400'>Do payment at the given account and Upload Receipt</p>
+                                                <p className='text-sm text-gray-400 '>Account:   <span className='text-white font-semibold'> {method.type.charAt(0).toUpperCase() + method.type.slice(1)}</span></p>
+                                                {paymentMethod === idx && method.type === 'bank_transfer' &&
+                                                    <p className='text-sm  text-gray-400'>Bank Name: <span className='text-white font-semibold'> {method.bankName}</span></p>
+                                                }
+
+                                                <p className='text-sm  text-gray-400'>Account Title: <span className='text-white font-semibold'> {method.accountName}</span></p>
+                                                <p className='text-sm  text-gray-400'>Account Number: <span className='text-white font-semibold'> {method.accountNumber}</span></p>
+                                                <div>
+                                                    <ImageUploader value={paymentReceipt} setValue={setPaymentReceipt} required={requiredFieldsFilled} size="md" />
+                                                </div>
+
+
+                                            </div>}
+                                    </div>
+                                ))}
+
+
+                            </div>
+                        </div>
+                        <div>
+                            <button
+                                type="submit"
+                                className='bg-red-500 text-white px-4 py-2 rounded w-full cursor-pointer hover:bg-red-700 mt-4'>Place Order</button>
+                        </div>
                     </form>
                 </div>
                 <div className='flex-1 p-8 bg-zinc-900 border-l border-neutral-500'>
