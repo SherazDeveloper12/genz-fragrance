@@ -19,12 +19,29 @@ export const fetchStorePaymentMethods = createAsyncThunk(
         }
     }
 )
+export const fetchStoreDeliveryCharges = createAsyncThunk(
+    "auth/storeDeliveryCharges",
+    async()=>{
+        try{
+            console.log("storeID from env", storeID);
+            const response = await axios.get(`${BASE_URL}/auth/storedeliverycharges/${storeID}`);
+            console.log("response.data from delivery charges", response.data);
+            return response.data;
+        } catch (error) {
+            if (error.response) {
+                throw error.response.data;
+            }
+            throw error;
+        }
+    }
+)
 
 export const AuthSlice = createSlice({
     name: "auth",
     initialState: {
         user_id: null,
         paymentMethods: [],
+        deliveryCharges: 0,
         message: "",
         tempID: null,
         status: "idle",
@@ -46,6 +63,12 @@ export const AuthSlice = createSlice({
             if (paymentMethods) {
                 state.paymentMethods = JSON.parse(paymentMethods);
             }
+        },
+        fetchStoreDeliveryChargesLocally: (state, action) => {
+            const storeDeliveryCharges = localStorage.getItem("storeDeliveryCharges");
+            if (storeDeliveryCharges) {
+                state.deliveryCharges = parseInt(storeDeliveryCharges);
+            }
         }
     },
     extraReducers: (builder) => {
@@ -63,12 +86,28 @@ export const AuthSlice = createSlice({
                 state.status = "failed";
                 state.error = action.error.message;
             });
+        builder
+            .addCase(fetchStoreDeliveryCharges.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(fetchStoreDeliveryCharges.fulfilled, (state, action) => {
+                state.status = "succeeded";
+                state.message = action.payload.message;
+                localStorage.setItem("storeDeliveryCharges", action.payload.storeDeliveryCharges.toString());
+                state.deliveryCharges = action.payload.storeDeliveryCharges;
+            })
+            .addCase(fetchStoreDeliveryCharges.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.error.message;
+            });
+
     }
 
 });
 
 export const { 
     fetchStorePaymentMethodsLocally,
+    fetchStoreDeliveryChargesLocally,
     setUser } = AuthSlice.actions;
 
 export default AuthSlice.reducer;

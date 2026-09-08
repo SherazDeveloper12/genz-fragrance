@@ -30,14 +30,15 @@ export default function Checkout() {
         dispatch(fetchProducts());
         dispatch(fetchCartFromStorage());
         return () => {
-            // Cleanup if needed
+           
         }
     }, []);
+    const deliveryCharges = useSelector((state: RootState) => state.auth.deliveryCharges);
     const paymentMethods = useSelector((state: RootState) => state.auth.paymentMethods);
     console.log('Payment Methods from Redux:', paymentMethods);
     const items = useSelector((state: RootState) => state.cart.items) as CartItem[];
     const [SameBillingAddress, setSameBillingAddress] = useState(true);
-    // const navigate = useNavigate();
+   
     const [email, setEmail] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [fullName, setFullName] = useState('');
@@ -268,15 +269,15 @@ export default function Checkout() {
                                     </div>
                                     <div className='flex justify-between items-center'>
                                         <p>Delievery Charges: </p>
-                                        <p> 499 PKR</p>
+                                        <p> {deliveryCharges} PKR</p>
                                     </div>
                                     <div className='flex justify-between items-center font-semibold text-lg'>
                                         <p>Total Payable Ammount: </p>
-                                        <p>{items.reduce((total, item) => total + item.product.price * item.quantity, 0) + 499} PKR</p>
+                                        <p>{items.reduce((total, item) => total + item.product.price * item.quantity, 0) + deliveryCharges} PKR</p>
                                     </div>
                                     <div className='flex justify-between items-center'>
                                         <p>Payment Status: </p>
-                                        <p>Unpaid</p>
+                                        <p>{paymentReceipt === "" ? "Unpaid" : "Paid"}</p>
                                     </div>
                                 </div>
 
