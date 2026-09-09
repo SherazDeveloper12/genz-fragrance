@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { nanoid } from "nanoid";
+import {toast} from "sonner";
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 const storeID = process.env.NEXT_PUBLIC_storeID;
 export const fetchStorePaymentMethods = createAsyncThunk(
@@ -35,7 +36,26 @@ export const fetchStoreDeliveryCharges = createAsyncThunk(
         }
     }
 )
-
+export const validateCouponCode = createAsyncThunk(
+    "auth/validateCouponCode",
+    async (couponCode) => {
+        try {
+            const response = await axios.post(`${BASE_URL}/coupons/validate/`,
+                {
+                    storeID: storeID,
+                    couponCode: couponCode
+                }
+            );
+            console.log("response.data from validate coupon", response.data);
+            return response.data;
+        } catch (error) {
+            if (error.response) {
+                throw error.response.data;
+            }
+            throw error;
+        }
+    }
+);
 export const AuthSlice = createSlice({
     name: "auth",
     initialState: {
@@ -46,7 +66,7 @@ export const AuthSlice = createSlice({
         tempID: null,
         status: "idle",
         error: "",
-        token: undefined,
+        couponDiscount: null,
     },
     reducers: {
         setUser: (state, action) => {
@@ -100,7 +120,28 @@ export const AuthSlice = createSlice({
                 state.status = "failed";
                 state.error = action.error.message;
             });
-
+        builder
+            .addCase(validateCouponCode.pending, (state) => {
+                state.status = "loading";
+                toast.dismiss();
+                toast.loading("Validating coupon...");
+            })
+            .addCase(validateCouponCode.fulfilled, (state, action) => {
+                state.status = "succeeded";
+                state.message = action.payload.message;
+                state.couponDiscount = action.payload.discount;
+                toast.dismiss();
+                toast.success("Coupon validated successfully!");
+            })
+            .addCase(validateCouponCode.rejected, (state, action) => {
+                state.status = "failed";
+                toast.error(action.error.message || "Error validating coupon");
+                console.log("Error validating coupon:", action.error.message);
+                state.error = action.error.message;
+                toast.dismiss();
+                toast.error(state.error || "Error validating coupon");
+            });
+            
     }
 
 });

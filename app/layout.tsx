@@ -6,7 +6,7 @@ import ClientShell from "./components/ClientShell/ClientShell";
 import favicon from '../favicon.ico'
 import Provider from "./provider";
 import StoreProvider from "./provider";
-
+import {Toaster} from "sonner"
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -49,6 +49,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <StoreProvider>
           <ClientShell>
+            <Toaster  position="bottom-right" />
             {children}
           </ClientShell>
         </StoreProvider>

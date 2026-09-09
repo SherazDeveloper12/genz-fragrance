@@ -8,7 +8,7 @@ import { createOrder, fetchOrdersbyuserid } from '../store/slices/order';
 
 import { useRouter } from 'next/navigation';
 import { clearCart, fetchCartFromStorage } from '../store/slices/cart';
-import { setUser } from '../store/slices/auth';
+import { setUser, validateCouponCode } from '../store/slices/auth';
 import type { RootState } from '../store/store';
 import { fetchProducts } from '../store/slices/product';
 import ImageUploader from '../components/ImageUploader/ImageUploader';
@@ -30,7 +30,7 @@ export default function Checkout() {
         dispatch(fetchProducts());
         dispatch(fetchCartFromStorage());
         return () => {
-           
+
         }
     }, []);
     const deliveryCharges = useSelector((state: RootState) => state.auth.deliveryCharges);
@@ -38,7 +38,7 @@ export default function Checkout() {
     console.log('Payment Methods from Redux:', paymentMethods);
     const items = useSelector((state: RootState) => state.cart.items) as CartItem[];
     const [SameBillingAddress, setSameBillingAddress] = useState(true);
-   
+
     const [email, setEmail] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [fullName, setFullName] = useState('');
@@ -55,13 +55,17 @@ export default function Checkout() {
     const [billingCountry, setBillingCountry] = useState('');
     const [paymentMethod, setPaymentMethod] = useState('');
     const [paymentReceipt, setPaymentReceipt] = useState('');
-    const [popupVisible, setPopupVisible] = useState(false);
+    const [couponCode, setCouponCode] = useState('');
     const _id = useSelector((state) => state.auth.user_id);
-    console.log('User from Redux:', _id);
+
     const dispatch = useDispatch();
     const router = useRouter();
     const { status, error } = useSelector((state) => state.orders);
     const [requiredFieldsFilled, setRequiredFieldsFilled] = useState(false);
+    const { message } = useSelector((state: RootState) => state.auth);
+    const couponDiscount = useSelector((state: RootState) => state.auth.couponDiscount);
+    console.log("Coupon validation message from Redux:", message);
+    console.log("Coupon code being applied:", couponDiscount);
     const handlePlaceOrder = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (paymentReceipt === "") {
@@ -126,22 +130,20 @@ export default function Checkout() {
             setPaymentMethod('COD');
         }
     };
+    const handleApplyCoupon = (couponCode: string) => {
+        dispatch(validateCouponCode(couponCode));
+        setCouponCode('');
+
+    }
     useEffect(() => {
         if (status === 'succeeded') {
-            // toast.dismiss();
-            // toast.success('Order placed successfully!');
+
             dispatch(clearCart());
             dispatch(fetchOrdersbyuserid(_id));
             router.push('/order', { replace: true });
         }
-        else if (status === 'loading') {
-            // toast.loading('Placing order...');
-        }
-        else if (status === 'failed') {
-            // toast.dismiss();
-            // toast.error(`${error}`);
-        }
-    }, [status, error]);
+
+    }, [status]);
 
 
     return (
@@ -257,7 +259,7 @@ export default function Checkout() {
                                     </li>
                                 ))}
                             </ul>
-                            <div>
+                            <div className='flex flex-col gap-2 mt-4 border-t border-neutral-500 pt-4'>
                                 <div className=''>
                                     <div className='flex justify-between items-center'>
                                         <p>Total Items:</p>
@@ -271,7 +273,7 @@ export default function Checkout() {
                                         <p>Delievery Charges: </p>
                                         <p> {deliveryCharges} PKR</p>
                                     </div>
-                                    <div className='flex justify-between items-center font-semibold text-lg'>
+                                    <div className={` ${couponDiscount ? "line-through " : ""} flex justify-between items-center font-semibold text-lg`}>
                                         <p>Total Payable Ammount: </p>
                                         <p>{items.reduce((total, item) => total + item.product.price * item.quantity, 0) + deliveryCharges} PKR</p>
                                     </div>
@@ -280,6 +282,24 @@ export default function Checkout() {
                                         <p>{paymentReceipt === "" ? "Unpaid" : "Paid"}</p>
                                     </div>
                                 </div>
+                                {couponDiscount ?
+                                    <>
+                                        <div className='flex justify-between items-center bg-green-500 text-white px-4 py-1 rounded flex-1 cursor-pointer hover:bg-green-700 w-full'>
+                                            <p>Coupon Discount: </p>
+                                            <p>{Math.round((items.reduce((total, item) => total + item.product.price * item.quantity, 0) + deliveryCharges) * (couponDiscount / 100))} PKR</p>
+                                        </div>
+                                    </>
+                                    :
+                                    <form onSubmit={(e) => { e.preventDefault(); handleApplyCoupon(couponCode); }} className='flex gap-2 w-full'>
+                                        <input required value={couponCode} onChange={(e) => setCouponCode(e.target.value)} type="text" placeholder='Apply Coupon' className='border border-neutral-500 rounded p-2 flex-3 bg-neutral-950 w-full ' />
+                                        <button
+                                            type="submit"
+                                            className='bg-green-500 text-white px-4 py-1 rounded flex-1 cursor-pointer hover:bg-green-700 w-full'>Apply</button>
+                                    </form>}
+                                        <div className={` ${couponDiscount ? " " : ""} flex justify-between items-center font-semibold text-lg`}>
+                                        <p>Total Payable Ammount: </p>
+                                        <p>{items.reduce((total, item) => total + item.product.price * item.quantity, 0) + deliveryCharges - Math.round((items.reduce((total, item) => total + item.product.price * item.quantity, 0) + deliveryCharges) * (couponDiscount / 100))} PKR</p>
+                                    </div>
 
                             </div>
                             {/* <div className='flex items-center gap-4'>
