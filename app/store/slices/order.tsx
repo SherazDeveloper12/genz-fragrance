@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from 'axios';
+import { toast } from "sonner";
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5000';
 export const createOrder = createAsyncThunk(
     "order/createOrder",
@@ -129,9 +130,13 @@ export const orderSlice = createSlice({
         builder
             .addCase(createOrder.pending, (state) => {
                 state.status = "loading";
+                toast.dismiss();
+                toast.loading("Creating order...");
             })
             .addCase(createOrder.fulfilled, (state, action) => {
                 state.status = "succeeded";
+                 toast.dismiss();
+                 toast.success("Order created successfully!");
                const existingOrder = state.orders.find(order => order._id === action.payload.order._id);
             if (!existingOrder) {
                 state.orders.push(action.payload.order);
@@ -141,6 +146,8 @@ export const orderSlice = createSlice({
             .addCase(createOrder.rejected, (state, action) => {
                 state.status = "failed";
                 state.error = action.error.message;
+                 toast.dismiss();
+                 toast.error(state.error || "Failed to create order");
             });
         builder
             .addCase(FetchAllOrders.pending, (state) => {

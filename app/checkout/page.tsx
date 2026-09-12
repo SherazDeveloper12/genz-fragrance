@@ -54,90 +54,115 @@ export default function Checkout() {
     const [billingPostalZipCode, setBillingPostalZipCode] = useState('');
     const [billingCountry, setBillingCountry] = useState('');
     const [paymentMethod, setPaymentMethod] = useState('');
+
     const [paymentReceipt, setPaymentReceipt] = useState('');
     const [couponCode, setCouponCode] = useState('');
     const _id = useSelector((state) => state.auth.user_id);
 
     const dispatch = useDispatch();
     const router = useRouter();
-    const { status, error } = useSelector((state) => state.orders);
+    const { status } = useSelector((state) => state.orders);
     const [requiredFieldsFilled, setRequiredFieldsFilled] = useState(false);
-    const { message } = useSelector((state: RootState) => state.auth);
+
     const couponDiscount = useSelector((state: RootState) => state.auth.couponDiscount);
-    console.log("Coupon validation message from Redux:", message);
-    console.log("Coupon code being applied:", couponDiscount);
+
+    console.log("========================================")
+    console.log("couponCode in checkout page", couponCode)
+    console.log("========================================")
+
     const handlePlaceOrder = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (paymentReceipt === "") {
-            console.log('Please select a payment method.');
-            setRequiredFieldsFilled(true);
-            alert('Please Upload the payment receipt.');
-            return;
+        console.log('Selected Payment Method:', paymentMethods[paymentMethod].type);
+        let orderDetails = {
+            username: `Guest`,
+            userid: _id,
+            email,
+            phoneNumber,
+            shippingAddress: {
+                fullName,
+                addressLine1,
+                city,
+                stateProvince,
+                postalZipCode,
+                country,
+            },
+            billingAddress: SameBillingAddress ? {
+                fullName,
+                addressLine1,
+                city,
+                stateProvince,
+                postalZipCode,
+                country,
+            } : {
+                fullName: billingFullName,
+                addressLine1: billingAddressLine1,
+                city: billingCity,
+                stateProvince: billingStateProvince,
+                postalZipCode: billingPostalZipCode,
+                country: billingCountry,
+            },
+            couponCode,
+            paymentMethod: paymentMethods[paymentMethod].type,
+            paymentReceipt,
+            items,
+            storeID: '6a7a2a19f8e85aac2049511c',
+
+
+        };
+        if (couponCode) {
+
+        }
+
+        if (paymentMethods[paymentMethod].type === "cod") {
+            setRequiredFieldsFilled(false);
+            dispatch(createOrder(orderDetails));
         }
         else {
-            setRequiredFieldsFilled(false);
-            console.log('Placing order with the following details:');
-            const orderDetails = {
-                username: `Guest`,
-                userid: _id,
-                email,
-                phoneNumber,
-                shippingAddress: {
-                    fullName,
-                    addressLine1,
-                    city,
-                    stateProvince,
-                    postalZipCode,
-                    country,
-                },
-                billingAddress: SameBillingAddress ? {
-                    fullName,
-                    addressLine1,
-                    city,
-                    stateProvince,
-                    postalZipCode,
-                    country,
-                } : {
-                    fullName: billingFullName,
-                    addressLine1: billingAddressLine1,
-                    city: billingCity,
-                    stateProvince: billingStateProvince,
-                    postalZipCode: billingPostalZipCode,
-                    country: billingCountry,
-                },
-                paymentMethod,
-                items,
-                storeID: '6a7a2a19f8e85aac2049511c',
-
-            };
-            dispatch(createOrder(orderDetails));
+            if (paymentReceipt === "") {
+                console.log('Please select a payment method.');
+                setRequiredFieldsFilled(true);
+                alert('Please Upload the payment receipt.');
+                return;
+            }
+            else {
+                setRequiredFieldsFilled(false);
+                orderDetails = {
+                    ...orderDetails,
+                    paymentReceipt,
+                };
+                dispatch(createOrder(orderDetails));
 
 
-            setEmail('');
-            setPhoneNumber('');
-            setFullName('');
-            setAddressLine1('');
-            setCity('');
-            setStateProvince('');
-            setPostalZipCode('');
-            setCountry('');
-            setBillingFullName('');
-            setBillingAddressLine1('');
-            setBillingCity('');
-            setBillingStateProvince('');
-            setBillingPostalZipCode('');
-            setBillingCountry('');
-            setPaymentMethod('COD');
+
+            }
+
         }
+        setEmail('');
+        setPhoneNumber('');
+        setFullName('');
+        setAddressLine1('');
+        setCity('');
+        setStateProvince('');
+        setPostalZipCode('');
+        setCountry('');
+        setBillingFullName('');
+        setBillingAddressLine1('');
+        setBillingCity('');
+        setBillingStateProvince('');
+        setBillingPostalZipCode('');
+        setBillingCountry('');
+        setPaymentMethod('');
     };
+
+
     const handleApplyCoupon = (couponCode: string) => {
         dispatch(validateCouponCode(couponCode));
-        setCouponCode('');
-
+       
     }
+
+
     useEffect(() => {
         if (status === 'succeeded') {
-
             dispatch(clearCart());
             dispatch(fetchOrdersbyuserid(_id));
             router.push('/order', { replace: true });
@@ -286,7 +311,7 @@ export default function Checkout() {
                                     <>
                                         <div className='flex justify-between items-center bg-green-500 text-white px-4 py-1 rounded flex-1 cursor-pointer hover:bg-green-700 w-full'>
                                             <p>Coupon Discount: </p>
-                                            <p>{Math.round((items.reduce((total, item) => total + item.product.price * item.quantity, 0) + deliveryCharges) * (couponDiscount / 100))} PKR</p>
+                                            <p>{Math.round((items.reduce((total, item) => total + item.product.price * item.quantity, 0) ) * (couponDiscount / 100))} PKR</p>
                                         </div>
                                     </>
                                     :
@@ -296,16 +321,13 @@ export default function Checkout() {
                                             type="submit"
                                             className='bg-green-500 text-white px-4 py-1 rounded flex-1 cursor-pointer hover:bg-green-700 w-full'>Apply</button>
                                     </form>}
-                                        <div className={` ${couponDiscount ? " " : ""} flex justify-between items-center font-semibold text-lg`}>
-                                        <p>Total Payable Ammount: </p>
-                                        <p>{items.reduce((total, item) => total + item.product.price * item.quantity, 0) + deliveryCharges - Math.round((items.reduce((total, item) => total + item.product.price * item.quantity, 0) + deliveryCharges) * (couponDiscount / 100))} PKR</p>
-                                    </div>
+                                <div className={` ${couponDiscount ? " " : ""} flex justify-between items-center font-semibold text-lg`}>
+                                    <p>Total Payable Ammount: </p>
+                                    <p>{Math.round(items.reduce((total, item) => total + item.product.price * item.quantity, 0) + deliveryCharges - (items.reduce((total, item) => total + item.product.price * item.quantity, 0) ) * (couponDiscount / 100))} PKR</p>
+                                </div>
 
                             </div>
-                            {/* <div className='flex items-center gap-4'>
-                                <input type='text' placeholder='Apply Coupon' className='border border-neutral-500 rounded p-2 flex-3 bg-neutral-950 ' />
-                                <button className='bg-green-500 text-white px-4 py-2 rounded flex-1 cursor-pointer hover:bg-green-700'>Apply</button>
-                            </div> */}
+                            
                         </div>
                     )}
                 </div>
