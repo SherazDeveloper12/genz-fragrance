@@ -26,21 +26,21 @@ export const createOrder = createAsyncThunk(
     }
 );
 
-export const FetchAllOrders = createAsyncThunk(
-    "order/fetchAllOrders",
-    async () => {
-        try {
-            const response = await axios.get(`${BASE_URL}/orders/`);
-            const data = await response.data;
-            return data;
-        } catch (error) {
-            if (error.response) {
-                throw error.response.data;
-            }
-            throw error;
-        }
-    }
-);
+// export const FetchAllOrders = createAsyncThunk(
+//     "order/fetchAllOrders",
+//     async () => {
+//         try {
+//             const response = await axios.get(`${BASE_URL}/orders/`);
+//             const data = await response.data;
+//             return data;
+//         } catch (error) {
+//             if (error.response) {
+//                 throw error.response.data;
+//             }
+//             throw error;
+//         }
+//     }
+// );
 
 export const updateOrderStatus = createAsyncThunk(
     "order/updateOrderStatus",
@@ -67,6 +67,7 @@ export const fetchOrdersbyuserid = createAsyncThunk(
     "order/fetchOrdersbyuserid",
     async (id) => {
         try {
+            console.log("Fetching orders for user ID:", id);
             const response = await axios.get(`${BASE_URL}/orders/user/${id}`);
             const data = await response.data.orders;
             return data;
@@ -149,19 +150,19 @@ export const orderSlice = createSlice({
                  toast.dismiss();
                  toast.error(state.error || "Failed to create order");
             });
-        builder
-            .addCase(FetchAllOrders.pending, (state) => {
-                state.status = "loading";
+        // builder
+        //     .addCase(FetchAllOrders.pending, (state) => {
+        //         state.status = "loading";
 
-            })
-            .addCase(FetchAllOrders.fulfilled, (state, action) => {
-              localStorage.setItem("allorders", JSON.stringify(action.payload));
-                state.orders = action.payload;
-            })
-            .addCase(FetchAllOrders.rejected, (state, action) => {
-                state.status = "failed";
-                state.error = action.error.message;
-            });
+        //     })
+        //     .addCase(FetchAllOrders.fulfilled, (state, action) => {
+        //       localStorage.setItem("allorders", JSON.stringify(action.payload));
+        //         state.orders = action.payload;
+        //     })
+        //     .addCase(FetchAllOrders.rejected, (state, action) => {
+        //         state.status = "failed";
+        //         state.error = action.error.message;
+        //     });
         builder
             .addCase(updateOrderStatus.pending, (state) => {
                 state.status = "loading";
